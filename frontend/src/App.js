@@ -6,29 +6,64 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import "./style.css";
+import React, { useState, useEffect } from "react";
+import { getProtectedData } from "./api";
+import { auth } from "./firebase";
+import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 
-function App() {
-  // Simule l'utilisateur et son rôle (remplace par ton système d'auth réel)
-  const user = "mtx_26";
-  const isAdmin = true;
+const provider = new GoogleAuthProvider();
+
+const App = () => {
+
+  const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        
+        // Remplace par une vérification plus avancée si nécessaire
+        setIsAdmin(currentUser.email === "admin@example.com");
+      } else {
+        setIsAdmin(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogin = async () => {
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error("Erreur lors de la connexion :", error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion :", error);
+    }
+  };
 
   return (
-    <HelmetProvider>
-      <Router>
-        <div className="bg-light d-flex flex-column min-vh-100">
-          <Header user={user} isAdmin={isAdmin} />
-          <div className="container flex-grow-1 py-4">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </div>
-          <Footer user={user} isAdmin={isAdmin} />
-        </div>
-      </Router>
-    </HelmetProvider>
+    <Router>
+    <div id="root">
+      <Header user={user} isAdmin={isAdmin} handleLogin={handleLogin} handleLogout={handleLogout} />
+      <main className="main-content">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
+  </Router>
   );
-}
+};
 
 export default App;
