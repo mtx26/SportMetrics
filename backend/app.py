@@ -3,7 +3,6 @@ from flask_cors import CORS
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from routes import api
-from services import auth
 
 
 

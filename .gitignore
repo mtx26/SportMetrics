@@ -174,3 +174,5 @@ cython_debug/
 .pypirc
 
 serviceAccountKey.json
+frontend/src/test/
+backend/test/
