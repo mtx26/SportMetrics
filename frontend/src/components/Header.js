@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { handleLogout, useUserInfo } from "../services/authService";
+import { handleLogout } from "../services/authService";
+import { useUser } from "../contexts/UserContext";
 import {
   MDBNavbar,
   MDBContainer,
@@ -16,9 +17,11 @@ import {
   MDBIcon
 } from "mdb-react-ui-kit";
 
-function Navbar({isAdmin, user}) {
+
+function Navbar() {
   const [showNav, setShowNav] = useState(false);
-  const userInfo = useUserInfo();
+  const { userInfo } = useUser();
+
 
   return (
     <MDBNavbar expand="lg" light bgColor="light">
@@ -39,7 +42,7 @@ function Navbar({isAdmin, user}) {
             <MDBNavbarItem>
               <MDBNavbarLink href="/contact">Contact</MDBNavbarLink>
             </MDBNavbarItem>
-            {user && isAdmin && 
+            {userInfo && userInfo?.role === "admin" && 
             <MDBNavbarItem>
               <MDBNavbarLink href="/admin">Administration</MDBNavbarLink>
             </MDBNavbarItem>
@@ -51,7 +54,7 @@ function Navbar({isAdmin, user}) {
         <div className="d-flex align-items-center gap-3">
           
           {/* Pseudo de l'utilisateur */}
-          {user && <span className="fw-bold">{userInfo?.displayName || "Utilisateur"}</span>}
+          {userInfo && <span className="fw-bold">{userInfo?.displayName || "Utilisateur"}</span>}
 
           {/* Icône Profil avec Dropdown */}
           <MDBDropdown className="me-3">
@@ -72,7 +75,7 @@ function Navbar({isAdmin, user}) {
 
             {/* Dropdown menu pour utilisateur connecté ou non */}
             <MDBDropdownMenu className="dropdown-menu-end">
-              {user ? (
+              {userInfo ? (
                 <>
                   <MDBDropdownItem link href="/profile">Mon profil</MDBDropdownItem>
                   <MDBDropdownItem link href="/settings">Paramètres</MDBDropdownItem>

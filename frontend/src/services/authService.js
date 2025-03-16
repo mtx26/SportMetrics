@@ -1,15 +1,15 @@
 import { auth, db } from "./firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
+import { getGlobalReloadUser } from "../contexts/UserContext"; // ✅ Import de `getGlobalReloadUser`
 import { 
   signInWithPopup, 
   GoogleAuthProvider, 
-  signOut, 
-  onAuthStateChanged, 
+  signOut,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail
 } from "firebase/auth";
-import { useState, useEffect } from "react";
+
 // Définition des providers
 const GoogleProvider = new GoogleAuthProvider();
 
@@ -18,7 +18,26 @@ const GoogleProvider = new GoogleAuthProvider();
  */
 export const GoogleHandleLogin = async () => {
   try {
-    await signInWithPopup(auth, GoogleProvider);
+    const result = await signInWithPopup(auth, GoogleProvider);
+    const user = result.user;
+
+    // Vérifier si l'utilisateur est déjà dans Firestore
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      await setDoc(userRef, {
+        displayName: user.displayName || "Utilisateur",
+        photoURL: user.photoURL || "",
+        role: "user",
+        email: user.email
+      });
+
+      console.log("Utilisateur Google ajouté à Firestore !");
+    }
+
+    getGlobalReloadUser()(); // ✅ Rafraîchir les infos utilisateur
+
   } catch (error) {
     console.error("Erreur lors de la connexion avec Google :", error);
   }
@@ -26,21 +45,21 @@ export const GoogleHandleLogin = async () => {
 
 /**
  * Inscription avec email et mot de passe
- * @param {string} email
- * @param {string} password
  */
 export const registerWithEmail = async (email, password, name) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // Ajouter les infos dans Firestore (seulement si ce n'est pas un compte Google)
     await setDoc(doc(db, "users", user.uid), {
-      displayName: name,  // Nom saisi par l'utilisateur
-      photoURL: "",       // Peut être mis à jour plus tard
-      role: "user",       // Rôle par défaut
+      displayName: name,
+      photoURL: "",
+      role: "user",
       email: user.email
     });
+
+    getGlobalReloadUser()(); // ✅ Rafraîchir les infos utilisateur
+    loginWithEmail(email, password); // ✅ Connexion après inscription
 
     console.log("Utilisateur inscrit :", userCredential.user);
   } catch (error) {
@@ -50,12 +69,13 @@ export const registerWithEmail = async (email, password, name) => {
 
 /**
  * Connexion avec email et mot de passe
- * @param {string} email
- * @param {string} password
  */
 export const loginWithEmail = async (email, password) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+    getGlobalReloadUser()(); // ✅ Rafraîchir les infos utilisateur
+
     console.log("Utilisateur connecté :", userCredential.user);
   } catch (error) {
     console.error("Erreur de connexion :", error.message);
@@ -64,7 +84,6 @@ export const loginWithEmail = async (email, password) => {
 
 /**
  * Envoie un email de réinitialisation du mot de passe
- * @param {string} email
  */
 export const resetPassword = async (email) => {
   try {
@@ -81,53 +100,11 @@ export const resetPassword = async (email) => {
 export const handleLogout = async () => {
   try {
     await signOut(auth);
+
+    getGlobalReloadUser()(); // ✅ Réinitialiser l'état utilisateur après la déconnexion
+
+    console.log("Utilisateur déconnecté !");
   } catch (error) {
     console.error("Erreur lors de la déconnexion :", error);
   }
-};
-
-/**
- * Écouteur d'état d'authentification
- * @param {function} setUser - Met à jour l'état utilisateur
- */
-export const listenToAuthChanges = (setUser) => {
-  return onAuthStateChanged(auth, (currentUser) => {
-    setUser(currentUser);
-  });
-};
-
-
-export const useUserInfo = () => {
-  const [userInfo, setUserInfo] = useState(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        let displayName = user.displayName;  // Google Users ont déjà un nom
-        let photoURL = user.photoURL;        // Google Users ont déjà une photo
-        let role = "user";                   // Valeur par défaut
-
-        if (!displayName || !photoURL) {
-          // Si c'est un compte email/password, récupérer les infos Firestore
-          const userRef = doc(db, "users", user.uid);
-          const userSnap = await getDoc(userRef);
-
-          if (userSnap.exists()) {
-            const userData = userSnap.data();
-            displayName = userData.displayName || "Utilisateur";
-            photoURL = userData.photoURL || "https://www.w3schools.com/howto/img_avatar.png"; // Image par défaut
-            role = userData.role || "user";
-          }
-        }
-
-        setUserInfo({ displayName, photoURL, role });
-      } else {
-        setUserInfo(null);
-      }
-    });
-
-    return () => unsubscribe(); // Nettoyer l'écouteur Firebase
-  }, []);
-
-  return userInfo;
 };

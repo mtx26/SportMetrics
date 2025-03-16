@@ -73,9 +73,9 @@ function App() {
             <MDBTabsPane open={justifyActive === 'tab1'}>
               <div className="text-center mb-3">
                 <p>Sign in with:</p>
-                <div className='d-flex justify-content-center'>
-                  <MDBBtn tag='a' color='none' className='m-1' style={{ color: 'red' }} onClick={() => GoogleHandleLogin()}>
-                    <MDBIcon fab icon='google' size="lg"/>
+                <div className='d-flex justify-content-center'>            
+                  <MDBBtn floating size='xxl' tag='a' className='' onClick={() => GoogleHandleLogin()}>
+                    <MDBIcon fab icon='google' />
                   </MDBBtn>
                 </div>
                 <p className="text-center mt-3">or:</p>
@@ -117,8 +117,8 @@ function App() {
               <div className="text-center mb-3">
                 <p>Sign up with:</p>
                 <div className='d-flex justify-content-center'>
-                  <MDBBtn tag='a' color='none' className='m-1' style={{ color: 'red' }} onClick={() => GoogleHandleLogin()}>
-                    <MDBIcon fab icon='google' size="lg"/>
+                  <MDBBtn floating size='xxl' tag='a' className='' onClick={() => GoogleHandleLogin()}>
+                    <MDBIcon fab icon='google' />
                   </MDBBtn>
                 </div>
                 <p className="text-center mt-3">or:</p>

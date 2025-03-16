@@ -1,8 +1,12 @@
 import React from 'react';
 import { Link } from "react-router-dom";
 import { MDBFooter, MDBContainer, MDBRow, MDBCol, MDBIcon } from 'mdb-react-ui-kit';
+import { useUser } from "../contexts/UserContext";
 
-function Footer({ user, isAdmin }) {
+function Footer() {
+
+  const { userInfo } = useUser();
+  
   return (
     <MDBFooter bgColor='dark' className='text-white text-center text-lg-start'>
       <section className='d-flex justify-content-center justify-content-lg-between p-4 border-bottom'>
@@ -30,7 +34,7 @@ function Footer({ user, isAdmin }) {
               <h6 className='text-uppercase fw-bold mb-4'>Navigation</h6>
               <p><Link to="/" className='text-reset'>Accueil</Link></p>
               <p><Link to="/" className='text-reset'>Title</Link></p>
-              {user && isAdmin && <p><Link to="/admin" className='text-reset'>Administration</Link></p>}
+              {userInfo && userInfo?.role === "admin" && <p><Link to="/admin" className='text-reset'>Administration</Link></p>}
             </MDBCol>
 
             <MDBCol md="3" lg="2" xl="2" className='mx-auto mb-4'>
