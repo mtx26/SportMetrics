@@ -1,57 +1,105 @@
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import {
+  MDBNavbar,
+  MDBContainer,
+  MDBNavbarBrand,
+  MDBNavbarToggler,
+  MDBNavbarNav,
+  MDBNavbarItem,
+  MDBNavbarLink,
+  MDBCollapse,
+  MDBDropdown,
+  MDBDropdownToggle,
+  MDBDropdownMenu,
+  MDBDropdownItem,
+  MDBIcon
+} from "mdb-react-ui-kit";
+import { handleLogout } from "../services/authService";
 
-function Header({ user, isAdmin, handleLogout, handleLogin }) {
+function Navbar({isAdmin, user}) {
+  const [showNav, setShowNav] = useState(false);
+
   return (
-    <>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <div className="container-fluid">
-          <Link className="navbar-brand" to="/">🏠 Accueil</Link>
-          <Link className="navbar-brand d-none d-lg-block" to="/">🎂 Title</Link>
-          {user && isAdmin && <Link className="navbar-brand d-none d-lg-block" to="/admin">⛔ Administration</Link>}
+    <MDBNavbar expand="lg" light bgColor="light">
+      <MDBContainer fluid>
+        {/* Logo du site */}
+        <MDBNavbarBrand href="/">SportMetrics
+        </MDBNavbarBrand>
 
-          <div className="d-none d-lg-flex align-items-center ms-auto">
-            {user ? (
-              <>
-                <span className="navbar-text me-3 text-white">
-                  Connecté en tant que <span className="text-primary">{user.email}</span>
-                </span>
-                <button onClick={handleLogout} className="btn btn-danger">Se déconnecter</button>
-              </>
-            ) : (
-              <button onClick={handleLogin} className="btn btn-primary">Se connecter</button>
-            )}
-          </div>
+        {/* Contenu du menu */}
+        <MDBCollapse navbar>
+          <MDBNavbarNav className="me-auto">
+            <MDBNavbarItem>
+              <MDBNavbarLink href="/accueil">Accueil</MDBNavbarLink>
+            </MDBNavbarItem>
+            <MDBNavbarItem>
+              <MDBNavbarLink href="/services">Services</MDBNavbarLink>
+            </MDBNavbarItem>
+            <MDBNavbarItem>
+              <MDBNavbarLink href="/contact">Contact</MDBNavbarLink>
+            </MDBNavbarItem>
+            {user && isAdmin && 
+            <MDBNavbarItem>
+              <MDBNavbarLink href="/admin">Administration</MDBNavbarLink>
+            </MDBNavbarItem>
+            }
+          </MDBNavbarNav>
+        </MDBCollapse>
 
-          <button className="navbar-toggler d-lg-none ms-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarOffcanvas" aria-controls="navbarOffcanvas">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-        </div>
-      </nav>
+        {/* Section pour l’icône utilisateur et le bouton burger */}
+        <div className="d-flex align-items-center">
 
-      <div className="offcanvas offcanvas-end text-bg-dark" id="navbarOffcanvas">
-        <div className="offcanvas-header">
-          <h5 className="offcanvas-title">Menu</h5>
-          <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+          {/* Icône Profil avec Dropdown */}
+          <MDBDropdown className="me-3">
+            <MDBDropdownToggle tag="a" className="nav-link hidden-arrow d-flex">
+              <MDBIcon fas icon="user-circle" size="lg" />
+            </MDBDropdownToggle>
+              {/* Si l'utilisateur est connecté, afficher le de profil sinon le de connection*/}
+              {user ?
+              <MDBDropdownMenu className="dropdown-menu-end">
+                <MDBDropdownItem link href="/profile">Mon Profil</MDBDropdownItem>
+                <MDBDropdownItem link href="/settings">Paramètres</MDBDropdownItem>
+                <MDBDropdownItem divider />
+                <MDBDropdownItem link href="/" onClick={handleLogout}>Déconnexion</MDBDropdownItem>
+              </MDBDropdownMenu>
+              :
+              <MDBDropdownMenu className="dropdown-menu-end">
+                <MDBDropdownItem link href="/login">Connexion</MDBDropdownItem>
+                <MDBDropdownItem link href="/register">Inscription</MDBDropdownItem>
+              </MDBDropdownMenu>
+              }
+          </MDBDropdown>
+
+          {/* Bouton Burger - Ajout d'une icône */}
+          <MDBNavbarToggler
+            type="button"
+            aria-expanded={showNav}
+            aria-label="Toggle navigation"
+            onClick={() => setShowNav(!showNav)}
+          >
+            <MDBIcon icon="bars" fas size="lg" />
+          </MDBNavbarToggler>
+
         </div>
-        <div className="offcanvas-body">
-          <ul className="navbar-nav">
-            <li className="nav-item"><Link className="nav-link" to="/">🏠 Accueil</Link></li>
-            <li className="nav-item"><Link className="nav-link" to="/">🎂 Title</Link></li>
-            {user && isAdmin && <li className="nav-item"><Link className="nav-link" to="/admin">⛔ Administration</Link></li>}
-            <hr className="dropdown-divider" />
-            {user ? (
-              <>
-                <li className="nav-item"><span className="nav-link text-white">Connecté en tant que <span className="ms-2 text-primary">{user.email}</span></span></li>
-                <li className="nav-item"><button onClick={handleLogout} className="btn btn-danger w-100">Se déconnecter</button></li>
-              </>
-            ) : (
-              <li className="nav-item"><button onClick={handleLogin} className="btn btn-primary w-100">Se connecter</button></li>
-            )}
-          </ul>
-        </div>
-      </div>
-    </>
+
+        {/* Contenu du menu */}
+        <MDBCollapse open={showNav} className="w-100">
+          <MDBNavbarNav className="ms-auto flex-column">
+            <MDBNavbarItem>
+              <MDBNavbarLink href="/accueil">Accueil</MDBNavbarLink>
+            </MDBNavbarItem>
+            <MDBNavbarItem>
+              <MDBNavbarLink href="/services">Services</MDBNavbarLink>
+            </MDBNavbarItem>
+            <MDBNavbarItem>
+              <MDBNavbarLink href="/contact">Contact</MDBNavbarLink>
+            </MDBNavbarItem>
+          </MDBNavbarNav>
+        </MDBCollapse>
+
+      </MDBContainer>
+    </MDBNavbar>
   );
 }
 
-export default Header;
+export default Navbar;

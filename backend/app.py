@@ -3,8 +3,7 @@ from flask_cors import CORS
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from routes import api
-from firebase_admin import auth
-from firebase_config import verify_firebase_token
+from services import auth
 
 
 
@@ -25,19 +24,6 @@ class User(db.Model):
 # Créer la base de données si elle n'existe pas
 with app.app_context():
     db.create_all()
-
-@app.route('/protected', methods=['GET'])
-def protected():
-    token = request.headers.get('Authorization')  # 🔥 Récupérer le token Firebase
-
-    if not token:
-        return jsonify({"error": "Token manquant"}), 401
-
-    user_data = verify_firebase_token(token.replace("Bearer ", ""))  # 🔥 Vérifier le token
-    if not user_data:
-        return jsonify({"error": "Token invalide"}), 401
-
-    return jsonify({"message": "✅ Accès autorisé !", "user": user_data})
 
 
 if __name__ == '__main__':
