@@ -1,4 +1,5 @@
-import { auth } from "./firebase";
+import { auth, db } from "./firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { 
   signInWithPopup, 
   GoogleAuthProvider, 
@@ -8,7 +9,7 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail
 } from "firebase/auth";
-
+import { useState, useEffect } from "react";
 // Définition des providers
 const GoogleProvider = new GoogleAuthProvider();
 
@@ -28,9 +29,19 @@ export const GoogleHandleLogin = async () => {
  * @param {string} email
  * @param {string} password
  */
-export const registerWithEmail = async (email, password) => {
+export const registerWithEmail = async (email, password, name) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // Ajouter les infos dans Firestore (seulement si ce n'est pas un compte Google)
+    await setDoc(doc(db, "users", user.uid), {
+      displayName: name,  // Nom saisi par l'utilisateur
+      photoURL: "",       // Peut être mis à jour plus tard
+      role: "user",       // Rôle par défaut
+      email: user.email
+    });
+
     console.log("Utilisateur inscrit :", userCredential.user);
   } catch (error) {
     console.error("Erreur d'inscription :", error.message);
@@ -83,4 +94,40 @@ export const listenToAuthChanges = (setUser) => {
   return onAuthStateChanged(auth, (currentUser) => {
     setUser(currentUser);
   });
+};
+
+
+export const useUserInfo = () => {
+  const [userInfo, setUserInfo] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        let displayName = user.displayName;  // Google Users ont déjà un nom
+        let photoURL = user.photoURL;        // Google Users ont déjà une photo
+        let role = "user";                   // Valeur par défaut
+
+        if (!displayName || !photoURL) {
+          // Si c'est un compte email/password, récupérer les infos Firestore
+          const userRef = doc(db, "users", user.uid);
+          const userSnap = await getDoc(userRef);
+
+          if (userSnap.exists()) {
+            const userData = userSnap.data();
+            displayName = userData.displayName || "Utilisateur";
+            photoURL = userData.photoURL || "https://www.w3schools.com/howto/img_avatar.png"; // Image par défaut
+            role = userData.role || "user";
+          }
+        }
+
+        setUserInfo({ displayName, photoURL, role });
+      } else {
+        setUserInfo(null);
+      }
+    });
+
+    return () => unsubscribe(); // Nettoyer l'écouteur Firebase
+  }, []);
+
+  return userInfo;
 };

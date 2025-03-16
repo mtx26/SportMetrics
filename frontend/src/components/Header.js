@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { handleLogout, useUserInfo } from "../services/authService";
 import {
   MDBNavbar,
   MDBContainer,
@@ -14,10 +15,10 @@ import {
   MDBDropdownItem,
   MDBIcon
 } from "mdb-react-ui-kit";
-import { handleLogout } from "../services/authService";
 
 function Navbar({isAdmin, user}) {
   const [showNav, setShowNav] = useState(false);
+  const userInfo = useUserInfo();
 
   return (
     <MDBNavbar expand="lg" light bgColor="light">
@@ -47,27 +48,44 @@ function Navbar({isAdmin, user}) {
         </MDBCollapse>
 
         {/* Section pour l’icône utilisateur et le bouton burger */}
-        <div className="d-flex align-items-center">
+        <div className="d-flex align-items-center gap-3">
+          
+          {/* Pseudo de l'utilisateur */}
+          {user && <span className="fw-bold">{userInfo?.displayName || "Utilisateur"}</span>}
 
           {/* Icône Profil avec Dropdown */}
           <MDBDropdown className="me-3">
-            <MDBDropdownToggle tag="a" className="nav-link hidden-arrow d-flex">
-              <MDBIcon fas icon="user-circle" size="lg" />
+            <MDBDropdownToggle tag="a" className="nav-link hidden-arrow d-flex align-items-center">
+              {userInfo?.photoURL ? (
+                <img 
+                  src={userInfo?.photoURL} 
+                  alt="Profil" 
+                  className="rounded-circle" 
+                  width="40" 
+                  height="40" 
+                  referrerPolicy="no-referrer" 
+                />
+              ) : (
+                <MDBIcon fas icon="user-circle" style={{ fontSize: "40px" }} />
+              )}
             </MDBDropdownToggle>
-              {/* Si l'utilisateur est connecté, afficher le de profil sinon le de connection*/}
-              {user ?
-              <MDBDropdownMenu className="dropdown-menu-end">
-                <MDBDropdownItem link href="/profile">Mon Profil</MDBDropdownItem>
-                <MDBDropdownItem link href="/settings">Paramètres</MDBDropdownItem>
-                <MDBDropdownItem divider />
-                <MDBDropdownItem link href="/" onClick={handleLogout}>Déconnexion</MDBDropdownItem>
-              </MDBDropdownMenu>
-              :
-              <MDBDropdownMenu className="dropdown-menu-end">
-                <MDBDropdownItem link href="/login">Connexion</MDBDropdownItem>
-                <MDBDropdownItem link href="/register">Inscription</MDBDropdownItem>
-              </MDBDropdownMenu>
-              }
+
+            {/* Dropdown menu pour utilisateur connecté ou non */}
+            <MDBDropdownMenu className="dropdown-menu-end">
+              {user ? (
+                <>
+                  <MDBDropdownItem link href="/profile">Mon profil</MDBDropdownItem>
+                  <MDBDropdownItem link href="/settings">Paramètres</MDBDropdownItem>
+                  <MDBDropdownItem divider />
+                  <MDBDropdownItem link href="/" onClick={handleLogout}>Déconnexion</MDBDropdownItem>
+                </>
+              ) : (
+                <>
+                  <MDBDropdownItem link href="/login">Connexion</MDBDropdownItem>
+                  <MDBDropdownItem link href="/register">Inscription</MDBDropdownItem>
+                </>
+              )}
+            </MDBDropdownMenu>
           </MDBDropdown>
 
           {/* Bouton Burger - Ajout d'une icône */}
@@ -81,6 +99,7 @@ function Navbar({isAdmin, user}) {
           </MDBNavbarToggler>
 
         </div>
+
 
         {/* Contenu du menu */}
         <MDBCollapse open={showNav} className="w-100">

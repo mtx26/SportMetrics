@@ -3,13 +3,14 @@ from flask_cors import CORS
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from routes import api
-
+"from test.admin_route import routes_test"
 
 
 app = Flask(__name__)
 CORS(app)  # Autorise les requêtes du frontend
 app.config.from_object(Config)
 app.register_blueprint(api)
+"app.register_blueprint(routes_test)"
 
 db = SQLAlchemy(app)
 

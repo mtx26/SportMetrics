@@ -1,7 +1,6 @@
-import { getProtectedData } from "../api";
+
 
 function Home() {
-    getProtectedData();
     
     return (
       <div>

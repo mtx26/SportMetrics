@@ -7,8 +7,10 @@ import { listenToAuthChanges } from "./services/authService";
 import { BrowserRouter as Router } from "react-router-dom"; // ✅ Correction ici
 
 const App = () => {
+
   const [user, setUser] = useState(null);
   const isAdmin = false;
+  
 
   useEffect(() => {
     const unsubscribe = listenToAuthChanges(setUser);

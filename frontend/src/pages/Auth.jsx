@@ -21,7 +21,6 @@ function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [username, setUsername] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const location = useLocation();
@@ -126,7 +125,6 @@ function App() {
               </div>
 
               <MDBInput wrapperClass='mb-4' label='Name' id='form1' type='text' onChange={(e) => setName(e.target.value)}/>
-              <MDBInput wrapperClass='mb-4' label='Username' id='form1' type='text' onChange={(e) => setUsername(e.target.value)}/>
               <MDBInput wrapperClass='mb-4' label='Email' id='form1' type='email' onChange={(e) => setEmail(e.target.value)}/>
               <div className="mb-4 position-relative d-flex align-items-center">
                 <MDBInput
@@ -153,7 +151,7 @@ function App() {
                 <MDBCheckbox name='flexCheck' id='flexCheckDefault' label='I have read and agree to the terms' />
               </div>
 
-              <MDBBtn className="mb-4 w-100" onClick={() => registerWithEmail(email, password)}>Sign up</MDBBtn>
+              <MDBBtn className="mb-4 w-100" onClick={() => registerWithEmail(email, password, name)}>Sign up</MDBBtn>
             </MDBTabsPane>
           </MDBTabsContent>
 
