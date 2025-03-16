@@ -6,7 +6,6 @@ import Auth from "../pages/Auth";
 import ResetPassword from "../pages/ResetPassword";
 // import Token from "../test/pages/Token";
 import { useUser } from "../contexts/UserContext";
-import { handleLogout } from "../services/authService";
 
 const AppRouter = () => {
 

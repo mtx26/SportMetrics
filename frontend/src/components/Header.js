@@ -34,17 +34,17 @@ function Navbar() {
         <MDBCollapse navbar>
           <MDBNavbarNav className="me-auto">
             <MDBNavbarItem>
-              <MDBNavbarLink href="/accueil">Accueil</MDBNavbarLink>
+              <MDBNavbarLink href="/accueil">Home</MDBNavbarLink>
             </MDBNavbarItem>
             <MDBNavbarItem>
-              <MDBNavbarLink href="/services">Services</MDBNavbarLink>
+              <MDBNavbarLink href="/services">Title</MDBNavbarLink>
             </MDBNavbarItem>
             <MDBNavbarItem>
               <MDBNavbarLink href="/contact">Contact</MDBNavbarLink>
             </MDBNavbarItem>
             {userInfo && userInfo?.role === "admin" && 
             <MDBNavbarItem>
-              <MDBNavbarLink href="/admin">Administration</MDBNavbarLink>
+              <MDBNavbarLink href="/admin">Admin</MDBNavbarLink>
             </MDBNavbarItem>
             }
           </MDBNavbarNav>
@@ -54,7 +54,7 @@ function Navbar() {
         <div className="d-flex align-items-center gap-3">
           
           {/* Pseudo de l'utilisateur */}
-          {userInfo && <span className="fw-bold">{userInfo?.displayName || "Utilisateur"}</span>}
+          {userInfo && <span className="fw-bold">{userInfo?.displayName || "User"}</span>}
 
           {/* Icône Profil avec Dropdown */}
           <MDBDropdown className="me-3">
@@ -77,15 +77,15 @@ function Navbar() {
             <MDBDropdownMenu className="dropdown-menu-end">
               {userInfo ? (
                 <>
-                  <MDBDropdownItem link href="/profile">Mon profil</MDBDropdownItem>
-                  <MDBDropdownItem link href="/settings">Paramètres</MDBDropdownItem>
+                  <MDBDropdownItem link href="/profile">My profile</MDBDropdownItem>
+                  <MDBDropdownItem link href="/settings">Settings</MDBDropdownItem>
                   <MDBDropdownItem divider />
-                  <MDBDropdownItem link href="/" onClick={handleLogout}>Déconnexion</MDBDropdownItem>
+                  <MDBDropdownItem link href="/" onClick={handleLogout}>Logout</MDBDropdownItem>
                 </>
               ) : (
                 <>
-                  <MDBDropdownItem link href="/login">Connexion</MDBDropdownItem>
-                  <MDBDropdownItem link href="/register">Inscription</MDBDropdownItem>
+                  <MDBDropdownItem link href="/login">Login</MDBDropdownItem>
+                  <MDBDropdownItem link href="/register">Register</MDBDropdownItem>
                 </>
               )}
             </MDBDropdownMenu>
@@ -108,10 +108,10 @@ function Navbar() {
         <MDBCollapse open={showNav} className="w-100">
           <MDBNavbarNav className="ms-auto flex-column">
             <MDBNavbarItem>
-              <MDBNavbarLink href="/accueil">Accueil</MDBNavbarLink>
+              <MDBNavbarLink href="/accueil">Home</MDBNavbarLink>
             </MDBNavbarItem>
             <MDBNavbarItem>
-              <MDBNavbarLink href="/services">Services</MDBNavbarLink>
+              <MDBNavbarLink href="/services">Title</MDBNavbarLink>
             </MDBNavbarItem>
             <MDBNavbarItem>
               <MDBNavbarLink href="/contact">Contact</MDBNavbarLink>

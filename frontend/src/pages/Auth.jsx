@@ -11,7 +11,9 @@ import {
   MDBInput,
   MDBCheckbox,
   MDBCard,
-  MDBCardBody
+  MDBCardBody,
+  MDBValidation,
+  MDBValidationItem
 } from 'mdb-react-ui-kit';
 import { useLocation } from "react-router-dom";
 import { GoogleHandleLogin, registerWithEmail, loginWithEmail } from "../services/authService";
@@ -22,6 +24,7 @@ function App() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
+  
 
   const location = useLocation();
 
@@ -69,91 +72,154 @@ function App() {
           <MDBTabsContent>
 
 
-            {/* Login Tab */}
-            <MDBTabsPane open={justifyActive === 'tab1'}>
-              <div className="text-center mb-3">
-                <p>Sign in with:</p>
-                <div className='d-flex justify-content-center'>            
-                  <MDBBtn floating size='xxl' tag='a' className='' onClick={() => GoogleHandleLogin()}>
-                    <MDBIcon fab icon='google' />
-                  </MDBBtn>
-                </div>
-                <p className="text-center mt-3">or:</p>
+          <MDBTabsPane open={justifyActive === 'tab1'}>
+            <div className="text-center mb-3">
+              <p>Sign in with:</p>
+              <div className='d-flex justify-content-center'>            
+                <MDBBtn floating size='xxl' tag='a' className='' onClick={() => GoogleHandleLogin()}>
+                  <MDBIcon fab icon='google' />
+                </MDBBtn>
               </div>
+              <p className="text-center mt-3">or:</p>
+            </div>
 
-              <MDBInput wrapperClass='mb-4' label='Email address' id='form1' type='email' onChange={(e) => setEmail(e.target.value)} />
-              <div className="position-relative d-flex align-items-center">
+            <MDBValidation className="row g-3">
+              <MDBValidationItem feedback="Please enter a valid email." invalid className="col-12">
                 <MDBInput
-                  wrapperClass="w-100"
-                  label="Password"
-                  id="passwordInput"
-                  type={passwordVisible ? "text" : "password"}
-                  onChange={(e) => setPassword(e.target.value)}
+                  wrapperClass='mb-4'
+                  label='Email address'
+                  id='form1'
+                  type='email'
+                  value={email}
+                  name='email'
+                  required
+                  onChange={(e) => setEmail(e.target.value)}
                 />
-                <MDBIcon 
-                  icon={passwordVisible ? "eye-slash" : "eye"}
-                  className="position-absolute"
-                  style={{
-                    right: "15px",
-                    cursor: "pointer",
-                    fontSize: "20px",
-                    color: "#6c757d"
-                  }}
-                  onClick={() => setPasswordVisible(!passwordVisible)}
-                />
-              </div>
+              </MDBValidationItem>
+
+              <MDBValidationItem feedback="Password is required." invalid className="col-12">
+                <div className="position-relative">
+                  <MDBInput
+                    wrapperClass="mb-4"
+                    label="Password"
+                    id="passwordInput"
+                    type={passwordVisible ? "text" : "password"}
+                    value={password}
+                    name='password'
+                    required
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <MDBIcon 
+                    icon={passwordVisible ? "eye-slash" : "eye"}
+                    className="position-absolute top-50 translate-middle-y"
+                    style={{
+                      right: "15px",
+                      cursor: "pointer",
+                      fontSize: "20px",
+                      color: "#6c757d"
+                    }}
+                    onClick={() => setPasswordVisible(!passwordVisible)}
+                  />
+                </div>
+              </MDBValidationItem>
 
               <div className="d-flex justify-content-between mb-4">
                 <a href="/reset-password">Forgot password?</a>
               </div>
 
-              <MDBBtn className="mb-4 w-100" onClick={() => loginWithEmail(email, password)}>Sign in</MDBBtn>
-            </MDBTabsPane>
-
-
-
-            {/* Register Tab */}
-            <MDBTabsPane open={justifyActive === 'tab2'}>
-              <div className="text-center mb-3">
-                <p>Sign up with:</p>
-                <div className='d-flex justify-content-center'>
-                  <MDBBtn floating size='xxl' tag='a' className='' onClick={() => GoogleHandleLogin()}>
-                    <MDBIcon fab icon='google' />
-                  </MDBBtn>
-                </div>
-                <p className="text-center mt-3">or:</p>
+              <div className="col-12">
+                <MDBBtn className="mb-4 w-100" type="submit" onClick={() => loginWithEmail(email, password)}>
+                  Sign in
+                </MDBBtn>
               </div>
+            </MDBValidation>
+          </MDBTabsPane>
 
-              <MDBInput wrapperClass='mb-4' label='Name' id='form1' type='text' onChange={(e) => setName(e.target.value)}/>
-              <MDBInput wrapperClass='mb-4' label='Email' id='form1' type='email' onChange={(e) => setEmail(e.target.value)}/>
-              <div className="mb-4 position-relative d-flex align-items-center">
+
+
+          <MDBTabsPane open={justifyActive === 'tab2'}>
+            <div className="text-center mb-3">
+              <p>Sign up with:</p>
+              <div className='d-flex justify-content-center'>
+                <MDBBtn floating size='xxl' tag='a' className='' onClick={() => GoogleHandleLogin()}>
+                  <MDBIcon fab icon='google' />
+                </MDBBtn>
+              </div>
+              <p className="text-center mt-3">or:</p>
+            </div>
+
+            <MDBValidation className="row g-3">
+              {/* Name Field */}
+              <MDBValidationItem feedback="Please enter your name." invalid className="col-12">
                 <MDBInput
-                  wrapperClass="w-100"
-                  label="Password"
-                  id="passwordInput"
-                  type={passwordVisible ? "text" : "password"}
-                  onChange={(e) => setPassword(e.target.value)}
+                  wrapperClass='mb-4'
+                  label='Name'
+                  id='form1'
+                  type='text'
+                  value={name}
+                  name='name'
+                  required
+                  onChange={(e) => setName(e.target.value)}
                 />
-                <MDBIcon 
-                  icon={passwordVisible ? "eye-slash" : "eye"}
-                  className="position-absolute"
-                  style={{
-                    right: "15px",
-                    cursor: "pointer",
-                    fontSize: "20px",
-                    color: "#6c757d"
-                  }}
-                  onClick={() => setPasswordVisible(!passwordVisible)}
+              </MDBValidationItem>
+
+              {/* Email Field */}
+              <MDBValidationItem feedback="Please enter a valid email." invalid className="col-12">
+                <MDBInput
+                  wrapperClass='mb-4'
+                  label='Email address'
+                  id='form1'
+                  type='email'
+                  value={email}
+                  name='email'
+                  required
+                  onChange={(e) => setEmail(e.target.value)}
                 />
-              </div>
+              </MDBValidationItem>
 
-              <div className='d-flex justify-content-center mb-4'>
-                <MDBCheckbox name='flexCheck' id='flexCheckDefault' label='I have read and agree to the terms' />
-              </div>
+              {/* Password Field */}
+              <MDBValidationItem feedback="Password is required." invalid className="col-12">
+                <div className="position-relative">
+                  <MDBInput
+                    wrapperClass="mb-4"
+                    label="Password"
+                    id="passwordInput"
+                    type={passwordVisible ? "text" : "password"}
+                    value={password}
+                    name='password'
+                    required
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <MDBIcon 
+                    icon={passwordVisible ? "eye-slash" : "eye"}
+                    className="position-absolute top-50 translate-middle-y"
+                    style={{
+                      right: "15px",
+                      cursor: "pointer",
+                      fontSize: "20px",
+                      color: "#6c757d"
+                    }}
+                    onClick={() => setPasswordVisible(!passwordVisible)}
+                  />
+                </div>
+              </MDBValidationItem>
 
-              <MDBBtn className="mb-4 w-100" onClick={() => registerWithEmail(email, password, name)}>Sign up</MDBBtn>
-            </MDBTabsPane>
-          </MDBTabsContent>
+              {/* Terms Checkbox */}
+              <MDBValidationItem feedback="You must agree to the terms." invalid className="col-12">
+                <div className='d-flex justify-content-center mb-4'>
+                  <MDBCheckbox name='flexCheck' id='flexCheckDefault' label='I have read and agree to the terms' required />
+                </div>
+              </MDBValidationItem>
+
+              {/* Sign Up Button */}
+              <div className="col-12">
+                <MDBBtn className="mb-4 w-100" type="submit" onClick={() => registerWithEmail(email, password, name)}>
+                  Sign up
+                </MDBBtn>
+              </div>
+            </MDBValidation>
+          </MDBTabsPane>
+        </MDBTabsContent>            
 
         </MDBCardBody>
       </MDBCard>
